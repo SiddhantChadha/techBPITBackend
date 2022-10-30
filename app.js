@@ -5,17 +5,22 @@ const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server);
 
-// app.get('/',(req,res){
-//     res.send("hi");
-// })
+
 
 io.on('connection', (socket) => {
     console.log('a user connected');
 
-    socket.on('msg', (msg,callback) => {
+    const user = socket.handshake.query.userId;
+    
+    socket.join(user);
+
+    socket.on('msg', (msg,receiver,callback) => {
+        
+        socket.to(receiver).emit("msg",msg);
         callback({
-            status: "got your msg"
-          });
+            status: "message delivered"
+        });
+
     });
 
 });
