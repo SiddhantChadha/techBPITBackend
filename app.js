@@ -26,6 +26,16 @@ io.on('connection', (socket) => {
 
     });
 
+    socket.on('grp-msg', (msg,receiver,callback) => {
+        
+        socket.to(receiver).emit(receiver + "-msg",msg);
+
+        callback({
+            status: "message delivered"
+        });
+
+    });
+
 });
 
 server.listen(process.env.PORT,()=>{
