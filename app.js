@@ -16,7 +16,7 @@ io.on('connection', (socket) => {
 
     socket.on('msg', (msg,receiver,callback) => {
         
-        socket.to(receiver).emit("msg",msg);
+        io.to(receiver).emit("msg",msg);
         callback({
             status: "message delivered"
         });
