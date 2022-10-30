@@ -8,15 +8,18 @@ const io = new Server(server);
 
 
 io.on('connection', (socket) => {
-    console.log('a user connected');
-
     const user = socket.handshake.query.userId;
-    
+    console.log(user + 'connected');
     socket.join(user);
+
+    socket.on('join-room',(roomId)=>{
+        socket.join(roomId);
+    })
 
     socket.on('msg', (msg,receiver,callback) => {
         
-        io.to(receiver).emit("msg",msg);
+        socket.to(receiver).emit("msg",msg);
+
         callback({
             status: "message delivered"
         });
