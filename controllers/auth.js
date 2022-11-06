@@ -18,7 +18,7 @@ const signUp = async (req,res)=>{
             });
 
         }else{
-            await User.create({email:req.body.email,password:req.body.password,otp:generatedOTP});
+            await User.create({email:req.body.email,password:req.body.password,otp:generatedOTP,username:req.body.username});
         }
 
         const mailSent = await sendMail({to:req.body.email,otp:generatedOTP});
@@ -50,7 +50,7 @@ const login = async(req,res)=>{
             return res.status(400).send({message:"Incorrect Password"});
         }
 
-        const nUser = {_id:user._id,email:user.email,isActive:user.isActive}
+        const nUser = {_id:user._id,email:user.email,isActive:user.isActive,username:user.username}
         return res.status(200).send(nUser);
 
 
