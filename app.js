@@ -1,13 +1,36 @@
 const express = require('express');
 const app = express();
 const http = require('http');
+const mongoose = require('mongoose');
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server);
+require('dotenv').config();
+
+app.use(express.json());
+
+(async () => {
+    try{
+      await mongoose.connect(process.env.DB_CONNECTION,{
+        useNewUrlParser: true,
+        useUnifiedTopology: true
+      });
+      console.log("Connected to DB");
+    }catch(e){
+      console.log(e.message)
+      process.exit();
+    }
+})();
+
+const signUp = require('./controllers/signUp')
+const verifyOTP = require('./controllers/verifyOTP')
 
 app.get('/',(req,res)=>{
     res.send("Dummy route");
 })
+
+app.post('/signup',signUp);
+app.post('/verify',verifyOTP);
 
 io.on('connection', (socket) => {
     const user = socket.handshake.query.userId;
@@ -40,6 +63,6 @@ io.on('connection', (socket) => {
 
 });
 
-server.listen(process.env.PORT,()=>{
-    console.log("Server started");
+server.listen(process.env.PORT || 3000,()=>{
+    console.log("Server started on port");
 })
