@@ -3,7 +3,7 @@ const User = require('../models/User')
 const allUsers = async (req,res)=>{
 
     try{
-        const userList = await User.find({});
+        const userList = await User.find({isActive:true});
         let list = [];
 
         userList.forEach(function(val){
