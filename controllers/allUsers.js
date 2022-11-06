@@ -7,8 +7,8 @@ const allUsers = async (req,res)=>{
         let list = [];
 
         userList.forEach(function(val){
-            const {_id,email,isActive,username} = val;
-            let user = {_id,email,isActive,username};
+            const {_id,email,isActive,username,image} = val;
+            let user = {_id,email,isActive,username,image};
             list.push(user);
         })
 
