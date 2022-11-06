@@ -24,6 +24,7 @@ app.use(express.json());
 
 const signUp = require('./controllers/signUp')
 const verifyOTP = require('./controllers/verifyOTP')
+const allUsers = require('./controllers/allUsers')
 
 app.get('/',(req,res)=>{
     res.send("Dummy route");
@@ -31,6 +32,7 @@ app.get('/',(req,res)=>{
 
 app.post('/signup',signUp);
 app.post('/verify',verifyOTP);
+app.get('/users',allUsers);
 
 io.on('connection', (socket) => {
     const user = socket.handshake.query.userId;
