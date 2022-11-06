@@ -10,42 +10,43 @@ require('dotenv').config();
 app.use(express.json());
 
 (async () => {
-    try{
-      await mongoose.connect(process.env.DB_CONNECTION,{
-        useNewUrlParser: true,
-        useUnifiedTopology: true
-      });
-      console.log("Connected to DB");
-    }catch(e){
-      console.log(e.message)
-      process.exit();
+    try {
+        await mongoose.connect(process.env.DB_CONNECTION, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true
+        });
+        console.log("Connected to DB");
+    } catch (e) {
+        console.log(e.message)
+        process.exit();
     }
 })();
 
-const signUp = require('./controllers/signUp')
+const { signUp, login } = require('./controllers/auth')
 const verifyOTP = require('./controllers/verifyOTP')
 const allUsers = require('./controllers/allUsers')
 
-app.get('/',(req,res)=>{
+app.get('/', (req, res) => {
     res.send("Dummy route");
 })
 
-app.post('/signup',signUp);
-app.post('/verify',verifyOTP);
-app.get('/users',allUsers);
+app.post('/signup', signUp);
+app.post('/verify', verifyOTP);
+app.get('/users', allUsers);
+app.post('/login',login)
 
 io.on('connection', (socket) => {
     const user = socket.handshake.query.userId;
     console.log(user + 'connected');
     socket.join(user);
 
-    socket.on('join-room',(roomId)=>{
+    socket.on('join-room', (roomId) => {
         socket.join(roomId);
     })
 
-    socket.on('msg', (msg,receiver,callback) => {
-        
-        socket.to(receiver).emit("msg",msg);
+    socket.on('msg', (msg, receiver, callback) => {
+
+        socket.to(receiver).emit("msg", msg);
 
         callback({
             status: "message delivered"
@@ -53,9 +54,9 @@ io.on('connection', (socket) => {
 
     });
 
-    socket.on('grp-msg', (msg,receiver,callback) => {
-        
-        socket.to(receiver).emit(receiver + "-msg",msg);
+    socket.on('grp-msg', (msg, receiver, callback) => {
+
+        socket.to(receiver).emit(receiver + "-msg", msg);
 
         callback({
             status: "message delivered"
@@ -65,6 +66,6 @@ io.on('connection', (socket) => {
 
 });
 
-server.listen(process.env.PORT || 3000,()=>{
+server.listen(process.env.PORT || 3000, () => {
     console.log("Server started on port");
 })
