@@ -15,7 +15,9 @@ const verify = async (req,res)=>{
             $unset:{otp:""}
         })
 
-        return res.status(200).send({message:"Verified Successfully"});
+        const nUser = {_id:user._id,email:user.email,isActive:user.isActive,username:user.username}
+        return res.status(200).send({message:"Verified Sucessfully",user:nUser});
+
     }catch(err){
         return res.status(400).send({message:"Error in verifying"});
     }

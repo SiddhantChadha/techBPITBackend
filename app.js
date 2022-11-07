@@ -46,6 +46,7 @@ io.on('connection', (socket) => {
 
     socket.on('msg', (msg, receiver, callback) => {
 
+        console.log(msg.sender);
         socket.to(receiver).emit(msg.sender +"-msg", msg);
 
         callback({
