@@ -46,7 +46,7 @@ io.on('connection', (socket) => {
 
     socket.on('msg', (msg, receiver, callback) => {
 
-        console.log(msg.sender);
+        console.log(msg);
         socket.to(receiver).emit(msg.sender +"-msg", msg);
 
         callback({
@@ -68,5 +68,5 @@ io.on('connection', (socket) => {
 });
 
 server.listen(process.env.PORT || 3000, () => {
-    console.log("Server started on port");
+    console.log("Server started");
 })
