@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const generateOTP = require('../services/otp');
 const sendMail = require('../services/mail');
+const bcrypt = require('bcrypt');
 
 const signUp = async (req,res)=>{
     
@@ -18,7 +19,8 @@ const signUp = async (req,res)=>{
             });
 
         }else{
-            await User.create({email:req.body.email,password:req.body.password,otp:generatedOTP,username:req.body.username});
+            const hashedPassword = await bcrypt.hash(req.body.password,10);
+            await User.create({email:req.body.email,password:hashedPassword,otp:generatedOTP,username:req.body.username});
         }
 
         const mailSent = await sendMail({to:req.body.email,otp:generatedOTP});
@@ -46,7 +48,9 @@ const login = async(req,res)=>{
             return res.status(400).send({message:"OTP not verified"});
         }
 
-        if(user.password != req.body.password){
+        const validPassword = await bcrypt.compare(req.body.password,user.password)
+
+        if(!validPassword){
             return res.status(400).send({message:"Incorrect Password"});
         }
 

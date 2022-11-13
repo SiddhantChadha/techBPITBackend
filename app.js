@@ -37,7 +37,7 @@ app.post('/login',login)
 
 io.on('connection', (socket) => {
     const user = socket.handshake.query.userId;
-    console.log(user + 'connected');
+    console.log(user + ' connected');
     socket.join(user);
 
     socket.on('join-room', (roomId) => {
@@ -45,8 +45,6 @@ io.on('connection', (socket) => {
     })
 
     socket.on('msg', (msg, receiver, callback) => {
-
-        console.log(msg);
         socket.to(receiver).emit(msg.sender +"-msg", msg);
 
         callback({
@@ -64,6 +62,10 @@ io.on('connection', (socket) => {
         });
 
     });
+
+    socket.on('disconnect',(resson)=>{
+        socket.leave(userId);
+    })
 
 });
 
