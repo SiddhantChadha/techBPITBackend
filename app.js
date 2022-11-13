@@ -25,7 +25,8 @@ app.use(express.json());
 const { signUp, login } = require('./controllers/auth')
 const verifyOTP = require('./controllers/verifyOTP')
 const allUsers = require('./controllers/allUsers')
-const messageSchema = require('./models/Message');
+const directMessage = require('./controllers/directMessage');
+
 
 app.get('/', (req, res) => {
     res.send("Dummy route");
@@ -35,6 +36,7 @@ app.post('/signup', signUp);
 app.post('/verify', verifyOTP);
 app.get('/users', allUsers);
 app.post('/login',login)
+app.post('/directMessage',directMessage)
 
 io.on('connection', (socket) => {
     const user = socket.handshake.query.userId;
