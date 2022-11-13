@@ -2,11 +2,11 @@ const Message = require('../models/Message');
 
 const directMessage = async (req,res)=>{
     
-    const senderId = req.body.senderId;
-    const receiverId = req.body.receiverId;
+    const sender = req.body.sender;
+    const receiver = req.body.receiver;
 
     try{
-        let messages = await Message.find({$or:[{senderId:senderId,receiverId:receiverId},{senderId:receiverId,receiverId:senderId}]});
+        let messages = await Message.find({$or:[{sender:sender,receiver:receiver},{sender:receiver,receiver:sender}]});
         messages.sort((a,b)=>a-b);
         return res.status(200).send(messages);
     }catch(err){

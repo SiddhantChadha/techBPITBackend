@@ -26,6 +26,7 @@ const { signUp, login } = require('./controllers/auth')
 const verifyOTP = require('./controllers/verifyOTP')
 const allUsers = require('./controllers/allUsers')
 const directMessage = require('./controllers/directMessage');
+const { createGroup,getGroups } = require("./controllers/group")
 
 
 app.get('/', (req, res) => {
@@ -37,6 +38,8 @@ app.post('/verify', verifyOTP);
 app.get('/users', allUsers);
 app.post('/login',login)
 app.post('/directMessage',directMessage)
+app.post('/createGroup',createGroup);
+app.get('/getGroups',getGroups);
 
 io.on('connection', (socket) => {
     const user = socket.handshake.query.userId;
@@ -50,7 +53,7 @@ io.on('connection', (socket) => {
     socket.on('msg', async (msg, receiver, callback) => {
 
         try{
-            await messageSchema.create({senderId:msg.sender,receiverId:msg.receiver,messageBody:msg.message,timestamp:msg.timestamp});
+            await messageSchema.create({sender:msg.sender,receiver:msg.receiver,message:msg.message,timestamp:msg.timestamp});
             socket.to(receiver).emit(msg.sender +"-msg", msg);
             
             callback({
