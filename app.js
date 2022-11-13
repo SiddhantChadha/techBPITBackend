@@ -64,7 +64,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('disconnect',(resson)=>{
-        socket.leave(userId);
+        socket.leave(user);
     })
 
 });
