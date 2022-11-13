@@ -25,6 +25,7 @@ app.use(express.json());
 const { signUp, login } = require('./controllers/auth')
 const verifyOTP = require('./controllers/verifyOTP')
 const allUsers = require('./controllers/allUsers')
+const messageSchema = require('./models/User');
 
 app.get('/', (req, res) => {
     res.send("Dummy route");
@@ -44,12 +45,21 @@ io.on('connection', (socket) => {
         socket.join(roomId);
     })
 
-    socket.on('msg', (msg, receiver, callback) => {
-        socket.to(receiver).emit(msg.sender +"-msg", msg);
+    socket.on('msg', async (msg, receiver, callback) => {
 
-        callback({
-            status: "message delivered"
-        });
+        try{
+            await messageSchema.create({senderId:msg.sender,receiverId:msg.receiver,messageBody:msg.message,timestamp:msg.timestamp});
+            socket.to(receiver).emit(msg.sender +"-msg", msg);
+            
+            callback({
+                status: "message delivered"
+            });
+
+        }catch(err){
+            callback({
+                status: "message not delivered"
+            });
+        }
 
     });
 
