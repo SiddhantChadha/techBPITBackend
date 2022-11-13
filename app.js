@@ -56,6 +56,7 @@ io.on('connection', (socket) => {
             });
 
         }catch(err){
+            console.log(err);
             callback({
                 status: "message not delivered"
             });
