@@ -64,6 +64,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('disconnect',(resson)=>{
+        console.log(user + " disconnected. Reason - " + resson);
         socket.leave(user);
     })
 
