@@ -7,7 +7,7 @@ const directMessage = async (req,res)=>{
 
     try{
         let messages = await Message.find({$or:[{sender:sender,receiver:receiver},{sender:receiver,receiver:sender}]});
-        messages.sort((a,b)=>a-b);
+        messages.sort((a,b)=>a.timestamp-b.timestamp);
         return res.status(200).send(messages);
     }catch(err){
         return res.status(400).send({message:"Error occured"});

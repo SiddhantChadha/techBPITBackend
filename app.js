@@ -22,6 +22,8 @@ app.use(express.json());
     }
 })();
 
+const messageSchema = require('./models/Message')
+
 const { signUp, login } = require('./controllers/auth')
 const verifyOTP = require('./controllers/verifyOTP')
 const allUsers = require('./controllers/allUsers')
@@ -79,8 +81,8 @@ io.on('connection', (socket) => {
 
     });
 
-    socket.on('disconnect',(resson)=>{
-        console.log(user + " disconnected. Reason - " + resson);
+    socket.on('disconnect',(reason)=>{
+        console.log(user + " disconnected. Reason - " + reason);
         socket.leave(user);
     })
 
