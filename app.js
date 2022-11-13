@@ -25,7 +25,7 @@ app.use(express.json());
 const { signUp, login } = require('./controllers/auth')
 const verifyOTP = require('./controllers/verifyOTP')
 const allUsers = require('./controllers/allUsers')
-const messageSchema = require('./models/User');
+const messageSchema = require('./models/Message');
 
 app.get('/', (req, res) => {
     res.send("Dummy route");
