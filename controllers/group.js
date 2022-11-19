@@ -15,9 +15,15 @@ const createGroup = async (req,res)=>{
 const getGroups = async (req,res) =>{
 
     try{
-        const grpList = await Group.find();
-        return res.status(200).send(grpList);
+        const grpsJoined = await User.find({_id:req.body.userId}).select("groupsJoined").lean();
+        
+        const allGrps = await Group.find({});
+
+        const grpToJoin = allGrps.filter(x=> !grpsJoined.includes(x._id));
+
+        return res.status(200).send(grpToJoin);
     }catch(err){
+        console.log(err);
         return res.status(400).send({message:"Error occured"});
     }
 
@@ -26,11 +32,18 @@ const getGroups = async (req,res) =>{
 const joinGroup = async(req,res)=>{
 
     try{
-        await User.updateOne({email:req.body.email},{
+        await User.updateOne({_id:req.body.userId},{
             $push:{
                 groupsJoined:req.body.groupId
             }
         })
+
+        await Group.updateOne({_id:req.body.groupId},{
+            $push:{
+                usersJoined:req.body.userId
+            }
+        })
+
         return res.status(200).send({message:"Group joined"});
     }catch(err){
         return res.status(400).send({message:"Error occured"});

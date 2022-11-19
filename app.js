@@ -41,7 +41,7 @@ app.get('/users', allUsers);
 app.post('/login',login)
 app.post('/directMessage',directMessage)
 app.post('/createGroup',createGroup);
-app.get('/getGroups',getGroups);
+app.post('/getGroups',getGroups);
 app.post('/joinGroup',joinGroup)
 app.post('/getJoinedGroup',getJoinedGroup)
 

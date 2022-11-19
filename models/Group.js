@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
 const groupSchema = new mongoose.Schema({
     groupName: {
@@ -11,7 +12,8 @@ const groupSchema = new mongoose.Schema({
     },
     description:{
         type:String
-    }
+    },
+    usersJoined:[{ type: Schema.Types.ObjectId, ref: 'User' }]
 
 });
 

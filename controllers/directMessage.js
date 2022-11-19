@@ -16,4 +16,8 @@ const directMessage = async (req,res)=>{
 
 }
 
+const sessionPost = async(req,res)=>{
+    
+}
+
 module.exports = directMessage;
