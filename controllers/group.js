@@ -1,4 +1,5 @@
 const Group = require("../models/Group")
+const User = require("../models/User")
 
 const createGroup = async (req,res)=>{
 
@@ -22,7 +23,35 @@ const getGroups = async (req,res) =>{
 
 }
 
+const joinGroup = async(req,res)=>{
+
+    try{
+        await User.updateOne({email:req.body.email},{
+            $push:{
+                groupsJoined:req.body.groupId
+            }
+        })
+        return res.status(200).send({message:"Group joined"});
+    }catch(err){
+        return res.status(400).send({message:"Error occured"});
+    }
+
+}
+
+const getJoinedGroup = async(req,res)=>{
+
+    try{
+        const grpList = await User.findOne({email:req.body.email}).populate('groupsJoined');
+        return res.status(200).send(grpList);
+    }catch(err){
+        console.log(err);
+        return res.status(400).send({message:"Error occured"});
+    }
+}
+
 module.exports = {
     createGroup,
-    getGroups
+    getGroups,
+    joinGroup,
+    getJoinedGroup
 }
