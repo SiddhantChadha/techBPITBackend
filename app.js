@@ -58,7 +58,7 @@ io.on('connection', (socket) => {
     socket.on('msg', async (msg, receiver, callback) => {
 
         try{
-            await messageSchema.create({sender:msg.sender,receiver:msg.receiver,message:msg.message,timestamp:msg.timestamp});
+            await messageSchema.create({msgType:msg.type,sender:msg.sender,receiver:msg.receiver,message:msg.message,timestamp:msg.timestamp,imageUrl:msg.imageUrl});
             socket.to(receiver).emit(msg.sender +"-msg", msg);
             
             callback({
@@ -77,7 +77,7 @@ io.on('connection', (socket) => {
     socket.on('grp-msg', async (msg, receiver, callback) => {
 
         try{
-            await messageSchema.create({sender:msg.sender,receiver:msg.receiver,message:msg.message,timestamp:msg.timestamp});
+            await messageSchema.create({msgType:msg.type,sender:msg.sender,receiver:msg.receiver,message:msg.message,timestamp:msg.timestamp,imageUrl:msg.imageUrl});
             socket.to(receiver).emit(receiver + "-msg", msg);
 
             callback({
@@ -90,8 +90,6 @@ io.on('connection', (socket) => {
                 status: "message not delivered"
             });
         }
-
-        
 
     });
 

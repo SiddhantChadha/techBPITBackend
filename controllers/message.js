@@ -13,12 +13,11 @@ const directMessage = async (req,res)=>{
         return res.status(400).send({message:"Error occured"});
     }
 
-
 }
 
 const groupMessage = async (req,res)=>{
     
-    const groupId = req.body.groupId
+    const groupId = req.body.groupId;
 
     try{
         let messages = await Message.find({receiver:groupId});
