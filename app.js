@@ -59,6 +59,8 @@ io.on('connection', (socket) => {
 
         try{
             await messageSchema.create({msgType:msg.type,sender:msg.sender,receiver:msg.receiver,message:msg.message,timestamp:msg.timestamp,imageUrl:msg.imageUrl});
+            
+            console.log("message being emitted :" + msg.message);
             socket.to(receiver).emit(msg.sender +"-msg", msg);
             
             callback({
