@@ -15,12 +15,9 @@ const createGroup = async (req,res)=>{
 const getGroups = async (req,res) =>{
 
     try{
-        const grpsJoined = await User.find({_id:req.body.userId}).select("groupsJoined").lean();
+        const user = await User.findOne({_id:req.body.userId});
+        const grpToJoin = await Group.find({_id:{$nin:user.groupsJoined}});
         
-        const allGrps = await Group.find({});
-
-        const grpToJoin = allGrps.filter(x=> !grpsJoined.includes(x._id));
-
         return res.status(200).send(grpToJoin);
     }catch(err){
         console.log(err);

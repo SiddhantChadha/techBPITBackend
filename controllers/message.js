@@ -16,8 +16,23 @@ const directMessage = async (req,res)=>{
 
 }
 
-const sessionPost = async(req,res)=>{
+const groupMessage = async (req,res)=>{
     
+    const groupId = req.body.groupId
+
+    try{
+        let messages = await Message.find({receiver:groupId});
+        messages.sort((a,b)=>a.timestamp-b.timestamp);
+        return res.status(200).send(messages);
+    }catch(err){
+        return res.status(400).send({message:"Error occured"});
+    }
+
 }
 
-module.exports = directMessage;
+
+
+module.exports = {
+    directMessage,
+    groupMessage
+};

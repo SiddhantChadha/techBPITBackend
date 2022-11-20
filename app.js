@@ -27,7 +27,7 @@ const messageSchema = require('./models/Message')
 const { signUp, login } = require('./controllers/auth')
 const verifyOTP = require('./controllers/verifyOTP')
 const allUsers = require('./controllers/allUsers')
-const directMessage = require('./controllers/directMessage');
+const { directMessage,groupMessage} = require('./controllers/message');
 const { createGroup,getGroups,joinGroup,getJoinedGroup } = require("./controllers/group")
 
 
@@ -44,6 +44,7 @@ app.post('/createGroup',createGroup);
 app.post('/getGroups',getGroups);
 app.post('/joinGroup',joinGroup)
 app.post('/getJoinedGroup',getJoinedGroup)
+app.post('/groupMessage',groupMessage)
 
 io.on('connection', (socket) => {
     const user = socket.handshake.query.userId;
@@ -73,13 +74,24 @@ io.on('connection', (socket) => {
 
     });
 
-    socket.on('grp-msg', (msg, receiver, callback) => {
+    socket.on('grp-msg', async (msg, receiver, callback) => {
 
-        socket.to(receiver).emit(receiver + "-msg", msg);
+        try{
+            await messageSchema.create({sender:msg.sender,receiver:msg.receiver,message:msg.message,timestamp:msg.timestamp});
+            socket.to(receiver).emit(receiver + "-msg", msg);
 
-        callback({
-            status: "message delivered"
-        });
+            callback({
+                status: "message delivered"
+            });
+            
+        }catch(err){
+            console.log(err);
+            callback({
+                status: "message not delivered"
+            });
+        }
+
+        
 
     });
 
