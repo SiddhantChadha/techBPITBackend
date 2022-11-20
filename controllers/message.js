@@ -10,6 +10,7 @@ const directMessage = async (req,res)=>{
         messages.sort((a,b)=>a.timestamp-b.timestamp);
         return res.status(200).send(messages);
     }catch(err){
+        console.log(err);
         return res.status(400).send({message:"Error occured"});
     }
 

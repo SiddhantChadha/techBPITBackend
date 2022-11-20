@@ -23,7 +23,7 @@ const messageSchema = new mongoose.Schema({
     },
     message:{
         type:String,
-        required:true,
+        required:!checkImg,
     },
     timestamp:{
         type:String,
