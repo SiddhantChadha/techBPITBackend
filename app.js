@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server);
+const { start } = require('./services/chat.js')
 require('dotenv').config();
 
 app.use(express.json());
@@ -16,6 +17,7 @@ app.use(express.json());
             useUnifiedTopology: true
         });
         console.log("Connected to DB");
+		start(io);
     } catch (e) {
         console.log(e.message)
         process.exit();
@@ -23,84 +25,49 @@ app.use(express.json());
 })();
 
 const messageSchema = require('./models/Message')
-
-const { signUp, login } = require('./controllers/auth')
+const { ROLE } = require('./config')
+const { signUp, login, refresh } = require('./controllers/auth')
 const verifyOTP = require('./controllers/verifyOTP')
-const allUsers = require('./controllers/allUsers')
+const { allUsers,searchUser} = require('./controllers/allUsers')
 const { directMessage,groupMessage} = require('./controllers/message');
-const { createGroup,getGroups,joinGroup,getJoinedGroup } = require("./controllers/group")
+const { createGroup,getGroups,joinGroup,getJoinedGroup,getGroup } = require("./controllers/group")
+const { createPost,getAllPost } = require('./controllers/post.js')
+const { recentPersonalChat,recentGroupChat } = require('./controllers/recentChat.js');
+const { getUser,updateUser } = require('./controllers/profile.js')
+const { verifyToken } = require('./middleware/jwtAuth');
+const { authRole } = require('./middleware/roleAuth')
+const { createProject,deleteProject } = require('./controllers/project')
 
-
-app.get('/', (req, res) => {
-    res.send("Dummy route");
-})
 
 app.post('/signup', signUp);
 app.post('/verify', verifyOTP);
-app.get('/users', allUsers);
+app.get('/users',verifyToken,allUsers);
 app.post('/login',login)
-app.post('/directMessage',directMessage)
+app.post('/auth/access_token/renew',refresh)
+
+app.post('/directMessage',verifyToken,directMessage)
+
 app.post('/createGroup',createGroup);
-app.post('/getGroups',getGroups);
+app.post('/getGroups',verifyToken,getGroups);
 app.post('/joinGroup',joinGroup)
-app.post('/getJoinedGroup',getJoinedGroup)
-app.post('/groupMessage',groupMessage)
+app.post('/getJoinedGroup',verifyToken,getJoinedGroup)
 
-io.on('connection', (socket) => {
-    const user = socket.handshake.query.userId;
-    console.log(user + ' connected');
-    socket.join(user);
+app.post('/groupMessage',verifyToken,groupMessage)
 
-    socket.on('join-room', (roomId) => {
-        socket.join(roomId);
-    })
+app.post('/createPost',verifyToken,createPost)
 
-    socket.on('msg', async (msg, receiver, callback) => {
+app.post('/recentPersonalChat',verifyToken,recentPersonalChat);
+app.post('/recentGroupChat',verifyToken,recentGroupChat);
+app.get('/getAllPost',verifyToken,getAllPost)
 
-        try{
-            await messageSchema.create({msgType:msg.type,sender:msg.sender,receiver:msg.receiver,message:msg.message,timestamp:msg.timestamp,imageUrl:msg.imageUrl});
-            
-            console.log("message being emitted :" + msg.message);
-            socket.to(receiver).emit(msg.sender +"-msg", msg);
-            
-            callback({
-                status: "message delivered"
-            });
+app.get('/user/:userId',verifyToken,getUser)
+app.get('/group/:groupId',getGroup)
+app.get('/searchUser',searchUser)
 
-        }catch(err){
-            console.log(err);
-            callback({
-                status: "message not delivered"
-            });
-        }
+app.patch('/updateUser',updateUser)
 
-    });
-
-    socket.on('grp-msg', async (msg, receiver, callback) => {
-
-        try{
-            await messageSchema.create({msgType:msg.type,sender:msg.sender,receiver:msg.receiver,message:msg.message,timestamp:msg.timestamp,imageUrl:msg.imageUrl});
-            socket.to(receiver).emit(receiver + "-msg", msg);
-
-            callback({
-                status: "message delivered"
-            });
-            
-        }catch(err){
-            console.log(err);
-            callback({
-                status: "message not delivered"
-            });
-        }
-
-    });
-
-    socket.on('disconnect',(reason)=>{
-        console.log(user + " disconnected. Reason - " + reason);
-        socket.leave(user);
-    })
-
-});
+app.post('/updateUser',createProject)
+app.delete('/updateUser',deleteProject)
 
 server.listen(process.env.PORT || 3000, () => {
     console.log("Server started");
