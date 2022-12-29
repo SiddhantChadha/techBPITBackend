@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
-const msgTypes = ["direct-message","group-message","direct-message-with-image","group-message-with-image","session-post"];
+const msgTypes = ["direct-message","group-message","direct-message-with-image","group-message-with-image"];
 const userRef = ["direct-message","direct-message-with-image"];
 const imageRef = ["direct-message-with-image","group-message-with-image"]
 const refTypes = ["User","Group"];
@@ -32,7 +32,14 @@ const messageSchema = new mongoose.Schema({
     imageUrl:{
         type:String,
         required: checkImg
-    }
+    },
+	readBy:{
+		type:Map,
+		of:String,
+	},
+	readAt:{
+		type:String,
+	}
 });
 
 function checkRef(){
@@ -42,6 +49,7 @@ function checkRef(){
 
     return refTypes[1];
 }
+
 
 function checkImg(){
     if(imageRef.indexOf(this.msgType) > -1){

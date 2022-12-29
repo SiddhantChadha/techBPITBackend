@@ -1,5 +1,6 @@
 const Group = require("../models/Group")
 const User = require("../models/User")
+const mongoose = require('mongoose')
 
 const createGroup = async (req,res)=>{
 
@@ -10,6 +11,29 @@ const createGroup = async (req,res)=>{
         return res.status(400).send({message:"Error in Creating Group"});
     }
 
+}
+
+const getGroup = async (req,res)=>{
+	
+	try{
+		const grp = await Group.aggregate([{$match:{_id:mongoose.Types.ObjectId(req.params.groupId)}},
+										{$lookup:{ from: 'users', localField: 'usersJoined', foreignField: '_id', as: 'usersJoined'}},
+										{$lookup:{ from: 'users', localField: 'moderators', foreignField: '_id', as: 'moderators'}},
+										{$project:{"groupName":1,"image":1,"description":1,"usersJoined._id":1,"usersJoined.username":1,
+												   "usersJoined.image":1,"moderators._id":1,"moderators.username":1,"moderators.image":1,
+												   "canEdit":{$cond:{if:{$in:[req.user,"$moderators"]},then:true,else:false}}
+												  }},
+					
+										  ]);
+		if(grp.length==0){
+			return res.status(400).json({message:"Error occured"});
+		}
+		return res.status(200).json(grp[0]);
+	}catch(err){
+		console.log(err)
+		return res.status(400).json({message:"Error occured"});
+	}
+	
 }
 
 const getGroups = async (req,res) =>{
@@ -63,5 +87,6 @@ module.exports = {
     createGroup,
     getGroups,
     joinGroup,
-    getJoinedGroup
+    getJoinedGroup,
+	getGroup
 }
