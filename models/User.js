@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
-const projectSchema = require('./Project.js')
 const { ROLE } = require('../config.js')
 const socialSchema = new Schema({platformImg:{type:String},platformLink:{type:String}})
 
@@ -10,7 +9,6 @@ const userSchema = new Schema({
     email:{
         type:String,
         required:true,
-		//unique:[true,"Email id already in use"],
     },
     password:{
         type:String,
@@ -19,6 +17,7 @@ const userSchema = new Schema({
     username:{
         type:String,
         required:true,
+		index:true
     },
     isActive: {
         type: Boolean,
@@ -30,7 +29,7 @@ const userSchema = new Schema({
     },
     image:{
         type:String,
-        default:"https://toppng.com/public/uploads/preview/circled-user-icon-user-pro-icon-11553397069rpnu1bqqup.png"
+        default:"https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png"
     },
 	city:{
 		type:String
@@ -41,23 +40,27 @@ const userSchema = new Schema({
 	about:{
 		type:String
 	},
-	yearOfStudy:{
+	enrollmentNumber:{
 		type:String,
+		minLength:11,
+		maxLength:11,
+		required:true
 	},
 	skills:[{type:String,trim:true,required:true}],
 	socialLinks:{
 				type:[socialSchema]
 				},
     groupsJoined:[{ type: Schema.Types.ObjectId, ref: 'Group' }],
-	projects:{
-		type:[projectSchema],
-	},
 	role:{
 		type:String,
 		enum:roleTypes,
 		required:true,
 		default: ROLE.BASIC
-	}
+	},
+	isBlocked: {
+        type: Boolean,
+        default: false,
+    }
 });
 
 module.exports = mongoose.model('User',userSchema)

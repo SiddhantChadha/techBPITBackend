@@ -1,12 +1,8 @@
-const User = require('../models/User')
-
 const authRole = (role)=>{
 	
-	return async (req,res,next)=>{
+	return (req,res,next)=>{
 		
-		let user = await User.findById(req.user)
-		
-		if(user.role !== role){
+		if(req.user.role !== role){
 			return res.status(401).json({message:"Not Allowed"})
 		}
 		

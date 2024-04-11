@@ -6,9 +6,9 @@ const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server);
 const { start } = require('./services/chat.js')
+const cors= require('cors');
 require('dotenv').config();
 
-app.use(express.json());
 
 (async () => {
     try {
@@ -24,50 +24,30 @@ app.use(express.json());
     }
 })();
 
-const messageSchema = require('./models/Message')
-const { ROLE } = require('./config')
-const { signUp, login, refresh } = require('./controllers/auth')
-const verifyOTP = require('./controllers/verifyOTP')
-const { allUsers,searchUser} = require('./controllers/allUsers')
-const { directMessage,groupMessage} = require('./controllers/message');
-const { createGroup,getGroups,joinGroup,getJoinedGroup,getGroup } = require("./controllers/group")
-const { createPost,getAllPost } = require('./controllers/post.js')
-const { recentPersonalChat,recentGroupChat } = require('./controllers/recentChat.js');
-const { getUser,updateUser } = require('./controllers/profile.js')
 const { verifyToken } = require('./middleware/jwtAuth');
 const { authRole } = require('./middleware/roleAuth')
-const { createProject,deleteProject } = require('./controllers/project')
+
+const authRoute = require('./routes/auth')
+const projectRoute = require('./routes/project')
+const userRoute = require('./routes/user')
+const postRoute = require('./routes/post')
+const groupRoute = require('./routes/group')
+const chatRoute = require('./routes/chat')
+const exploreRoute = require('./routes/explore')
+const adRoute = require('./routes/ad')
 
 
-app.post('/signup', signUp);
-app.post('/verify', verifyOTP);
-app.get('/users',verifyToken,allUsers);
-app.post('/login',login)
-app.post('/auth/access_token/renew',refresh)
+app.use(cors());
+app.use(express.json());
 
-app.post('/directMessage',verifyToken,directMessage)
-
-app.post('/createGroup',createGroup);
-app.post('/getGroups',verifyToken,getGroups);
-app.post('/joinGroup',joinGroup)
-app.post('/getJoinedGroup',verifyToken,getJoinedGroup)
-
-app.post('/groupMessage',verifyToken,groupMessage)
-
-app.post('/createPost',verifyToken,createPost)
-
-app.post('/recentPersonalChat',verifyToken,recentPersonalChat);
-app.post('/recentGroupChat',verifyToken,recentGroupChat);
-app.get('/getAllPost',verifyToken,getAllPost)
-
-app.get('/user/:userId',verifyToken,getUser)
-app.get('/group/:groupId',getGroup)
-app.get('/searchUser',searchUser)
-
-app.patch('/updateUser',updateUser)
-
-app.post('/updateUser',createProject)
-app.delete('/updateUser',deleteProject)
+app.use('/auth',authRoute)
+app.use('/user',verifyToken,userRoute)
+app.use('/post',verifyToken,postRoute)
+app.use('/group',verifyToken,groupRoute)
+app.use('/project',verifyToken,projectRoute)
+app.use('/chat',verifyToken,chatRoute)
+app.use('/explore',verifyToken,exploreRoute)
+app.use('/ad',verifyToken,adRoute)
 
 server.listen(process.env.PORT || 3000, () => {
     console.log("Server started");

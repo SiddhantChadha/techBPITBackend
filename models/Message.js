@@ -23,7 +23,9 @@ const messageSchema = new mongoose.Schema({
     },
     message:{
         type:String,
-        required:!checkImg,
+        required:function(){
+			return !checkImg(this.msgType)
+		},
     },
     timestamp:{
         type:String,
@@ -31,7 +33,9 @@ const messageSchema = new mongoose.Schema({
     },
     imageUrl:{
         type:String,
-        required: checkImg
+        required: function(){
+			return checkImg(this.msgType)
+		}
     },
 	readBy:{
 		type:Map,
@@ -39,6 +43,7 @@ const messageSchema = new mongoose.Schema({
 	},
 	readAt:{
 		type:String,
+        default:null,
 	}
 });
 

@@ -3,6 +3,11 @@ const ROLE = {
 	BASIC:"basic"
 }
 
+const postType = ["eventPost","resourcePost","communityPost"];
+const eventMode = ['Online','Offline'];
+
 module.exports = {
-	ROLE
+	ROLE,
+	postType,
+	eventMode
 }
